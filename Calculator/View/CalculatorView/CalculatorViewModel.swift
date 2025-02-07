@@ -10,7 +10,6 @@ import Foundation
 extension CalculatorView {
     final class ViewModel: ObservableObject {
         
-        
         @Published private var calculator = Calculator()
         
         var displayText: String {
@@ -18,14 +17,14 @@ extension CalculatorView {
         }
         
         var buttons: [[ButtonType]] {
-            let clearType: ButtonType = calculator.showAllClear ? .allClear : .clear
+            let clearType: ButtonType = calculator.showAllClear ? ButtonType.allClear : ButtonType.clear
             return [
-                [clearType, .cosine, .tangent, .cotangent],
-                [.allClear, .negative, .percent, .root],
+                [.sine, .cosine, .tangent, .cotangent],
+                [clearType, .negative, .percent, .root],
                 [.digit(.seven), .digit(.eight), .digit(.nine), .operation(.division)],
                 [.digit(.four), .digit(.five), .digit(.six), .operation(.multiplication)],
                 [.digit(.one), .digit(.two), .digit(.three), .operation(.subtraction)],
-                [.decimal, .digit(.zero), .equals, .operation(.addition)]
+                [ButtonType.decimal, .digit(.zero), .equals, .operation(.addition)]
             ]
         }
         

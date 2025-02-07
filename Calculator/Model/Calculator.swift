@@ -60,7 +60,7 @@ struct Calculator {
     }
     
     private var containsDecimal: Bool {
-        return getNumberString(forNumber: number).contains(",")
+        return getNumberString(forNumber: number).contains(Locale.current.decimalSeparator ?? ".")
     }
     
     mutating func setDigit(_ digit: Digit) {
@@ -68,7 +68,7 @@ struct Calculator {
             carryingZeroCount += 1
         } else if canAddDigit(digit) {
             let numberString = getNumberString(forNumber: newNumber)
-            newNumber = Decimal(string: numberString.appending("\(digit.rawValue)"))
+            newNumber = Decimal(string: numberString.appending("\(digit.rawValue)").replacingOccurrences(of: ",", with: "."))
         }
     }
     
@@ -225,14 +225,20 @@ struct Calculator {
     }
     
     private func getNumberString(forNumber number: Decimal?, withCommas: Bool = false) -> String {
-        var numberString = (withCommas ? number?.formatted(.number) : number.map(String.init)) ?? "0"
+        let numberFormatter = NumberFormatter()
+        numberFormatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.maximumFractionDigits = 9
+        let formattedNumber = numberFormatter.string(from: (number ?? 0) as NSDecimalNumber) ?? ""
+        var numberString = (withCommas ? formattedNumber : number.map(String.init)) ?? "0"
+        //var numberString = (withCommas ? number?.formatted(.number) : number.map(String.init)) ?? "0"
                 
         if carryingNegative {
             numberString.insert("-", at: numberString.startIndex)
         }
         
         if carryingDecimal {
-            numberString.insert(",", at: numberString.endIndex)
+            numberString.insert(Character(Locale.current.decimalSeparator ?? "."), at: numberString.endIndex)
         }
         
         if carryingZeroCount > 0 {
