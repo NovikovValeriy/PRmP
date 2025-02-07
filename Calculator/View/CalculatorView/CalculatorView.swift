@@ -9,20 +9,10 @@ import SwiftUI
 
 struct CalculatorView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @State private var textLabel: String = "0"
+    @EnvironmentObject private var viewModel: ViewModel
     
     private let spacing: CGFloat = 12
-    private var buttons: [[ButtonType]] = [
-        [.sine, .cosine, .tangent, .cotangent],
-        [.clear, .negative, .percent, .root],
-        [.seven, .eight, .nine, .divide],
-        [.four, .five, .six, .multiply],
-        [.one, .two, .three, .minus],
-        [.dot, .zero, .equal, .plus]
-    ]
     
-    private var calculatorState: CalculatorState = .none
-    private var operationState: OperationState = .none
     private var previousNumber: Double = 0
     private var currentNumber: Double = 0
     
@@ -33,37 +23,35 @@ struct CalculatorView: View {
                 Color.background
                     .ignoresSafeArea()
 
-//                Color.gray
-//                    .ignoresSafeArea()
-
-                VStack(spacing: 0/*spacing: verticalSizeClass == .regular ? nil : 0*/) {
+                VStack(spacing: 0) {
                     Spacer()
                     HStack() {
                         Spacer()
-                        Text(textLabel)
+                        Text(viewModel.displayText)
                             .font(.system(size: verticalSizeClass == .regular ? 90 : 50, weight: .light))
                             .allowsTightening(true)
-                            .minimumScaleFactor(0.1)
+                            .minimumScaleFactor(0.2)
                             .lineLimit(1)
                     }
                     .padding([.trailing, .leading], spacing)
                     
                     VStack(spacing: spacing) {
-                        ForEach(buttons, id: \.self) { row in
+                        ForEach(viewModel.buttons, id: \.self) { row in
                             HStack(spacing: spacing) {
                                 ForEach(row, id: \.self) { button in
                                     Button() {
-                                        buttonPressed(item: button)
-                                        //print("\(UIScreen.main.bounds.width): width\n\(UIScreen.main.bounds.height): height")
+                                        viewModel.performAction(for: button)
                                     } label : {
-                                        if button.rawValue == "AC" && calculatorState != .none {
-                                            CalculatorButtonView(text: "C", width: buttonWidth(geometry), height: buttonHeight(button, geometry), size: verticalSizeClass == .regular ? button.fontSize : 20, button: button)
-                                        } else {
-                                            CalculatorButtonView(text: button.rawValue, width: buttonWidth(geometry), height: buttonHeight(button, geometry), size: verticalSizeClass == .regular ? button.fontSize : 20, button: button)
-                                        }
+                                        Text(button.description)
+                                            .font(.system(size: verticalSizeClass == .regular ? button.fontSize : 20))
+                                            .foregroundStyle(viewModel.buttonTypeIsHighlighted(buttonType: button) ? button.buttonColor : button.fontColor)
+                                            .frame(
+                                                width: buttonWidth(geometry),
+                                                height: buttonHeight(button, geometry)
+                                            )
                                         
                                     }
-                                    .background(button.buttonColor)
+                                    .background(viewModel.buttonTypeIsHighlighted(buttonType: button) ? button.fontColor : button.buttonColor)
                                     .cornerRadius(100)
                                 }
                             }
@@ -73,45 +61,6 @@ struct CalculatorView: View {
                 }
             }
             .foregroundStyle(.white)
-        }
-    }
-    
-    func buttonPressed(item: ButtonType) {
-        switch item {
-        case .sine:
-            break
-        case .cosine:
-            break
-        case .tangent:
-            break
-        case .cotangent:
-            break
-        case .clear:
-            textLabel = "0"
-        case .negative:
-            break
-        case .percent:
-            break
-        case .root:
-            break
-        case .divide:
-            break
-        case .multiply:
-            break
-        case .minus:
-            break
-        case .plus:
-            break
-        case .equal:
-            break
-        case .dot:
-            break
-        default:
-            if textLabel != "0" {
-                textLabel.append(item.rawValue)
-            } else {
-                textLabel = item.rawValue
-            }
         }
     }
     
@@ -192,4 +141,5 @@ struct CalculatorView: View {
 
 #Preview {
     CalculatorView()
+        .environmentObject(CalculatorView.ViewModel())
 }
