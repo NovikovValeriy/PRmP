@@ -14,16 +14,18 @@ struct Calculator {
             var operation: ArithmeticOperation
 
             func evaluate(with secondNumber: Decimal) -> Decimal {
+                let result: Decimal
                 switch operation {
                 case .addition:
-                    return number + secondNumber
+                    result =  number + secondNumber
                 case .subtraction:
-                    return number - secondNumber
+                    result = number - secondNumber
                 case .multiplication:
-                    return number * secondNumber
+                    result =  number * secondNumber
                 case .division:
-                    return number / secondNumber
+                    result =  number / secondNumber
                 }
+                return result
             }
         }
     
@@ -225,6 +227,9 @@ struct Calculator {
     }
     
     private func getNumberString(forNumber number: Decimal?, withCommas: Bool = false) -> String {
+        if number?.isNaN ?? false {
+            return "Ошибка"
+        }
         let numberFormatter = NumberFormatter()
         numberFormatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
         numberFormatter.numberStyle = .decimal

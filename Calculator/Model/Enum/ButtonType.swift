@@ -29,13 +29,13 @@ enum ButtonType: Hashable, CustomStringConvertible {
         case .operation(let operation):
             return operation.description
         case .negative:
-            return "±"
+            return "plus.forwardslash.minus"
         case .percent:
-            return "%"
+            return "percent"
         case .decimal:
             return ","
         case .equals:
-            return "="
+            return "equal"
         case .allClear:
             return "AC"
         case .clear:
@@ -49,7 +49,7 @@ enum ButtonType: Hashable, CustomStringConvertible {
         case .cotangent:
             return "cot"
         case .root:
-            return "√"
+            return "x.squareroot"
         }
     }
     
@@ -79,8 +79,21 @@ enum ButtonType: Hashable, CustomStringConvertible {
         switch self {
         case .sine, .cosine, .tangent, .cotangent:
             return 25
-        default:
+        case .operation, .equals:
             return 35
+        case .allClear, .clear, .negative, .percent, .root:
+            return 30
+        default:
+            return 40
+        }
+    }
+    
+    var fontWeight: Font.Weight {
+        switch self {
+        case .operation, .equals, .allClear, .clear, .negative, .percent, .root:
+            return .medium
+        default:
+            return .regular
         }
     }
 }

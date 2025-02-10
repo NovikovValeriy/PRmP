@@ -10,10 +10,14 @@ import Foundation
 extension CalculatorView {
     final class ViewModel: ObservableObject {
         
-        @Published private var calculator = Calculator()
+        @Published private var calculator = CalculatorNew()
         
         var displayText: String {
             return calculator.displayText
+        }
+        
+        var displaySecondNumberText: String {
+            return calculator.displaySecondNumberText ?? ""
         }
         
         var buttons: [[ButtonType]] {
@@ -24,7 +28,7 @@ extension CalculatorView {
                 [.digit(.seven), .digit(.eight), .digit(.nine), .operation(.division)],
                 [.digit(.four), .digit(.five), .digit(.six), .operation(.multiplication)],
                 [.digit(.one), .digit(.two), .digit(.three), .operation(.subtraction)],
-                [ButtonType.decimal, .digit(.zero), .equals, .operation(.addition)]
+                [.decimal, .digit(.zero), .equals, .operation(.addition)]
             ]
         }
         
@@ -60,7 +64,7 @@ extension CalculatorView {
         }
         
         func buttonTypeIsHighlighted(buttonType: ButtonType) -> Bool {
-            guard case .operation(let operation) = buttonType else { return false}
+            guard case .operation(let operation) = buttonType else { return false }
             return calculator.operationIsHighlighted(operation)
         }
     }

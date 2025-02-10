@@ -7,15 +7,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F9DC84D0-5AE2-4BC9-8EEB-DC9280BB7E27"
+            uuid = "890CB7D9-EA8F-4511-BF06-5101B73DF377"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Calculator/Model/Calculator.swift"
+            filePath = "Calculator/Model/CalculatorNew.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "setDigit(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -23,31 +23,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F7120CB0-D6E3-407D-A5C0-59F108508ABB"
-            shouldBeEnabled = "Yes"
+            uuid = "DAF6CAF5-CE2B-477C-ADD8-E4E0022A78E4"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Calculator/Model/Calculator.swift"
+            filePath = "Calculator/Model/CalculatorNew.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
-            landmarkName = "setDecimal()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1FCD8F9E-3D8B-4534-8553-75475162BFEC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Calculator/Model/Calculator.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
             landmarkName = "getNumberString(forNumber:withCommas:)"
             landmarkType = "7">
          </BreakpointContent>

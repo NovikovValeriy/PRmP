@@ -13,13 +13,13 @@ enum ArithmeticOperation: CaseIterable, CustomStringConvertible {
     var description: String {
         switch self {
         case .addition:
-            return "+"
+            return "plus"
         case .subtraction:
-            return "−"
+            return "minus"
         case .multiplication:
-            return "×"
+            return "multiply"
         case .division:
-            return "÷"
+            return "divide"
         }
     }
 }
