@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Digit: Int, CaseIterable, CustomStringConvertible {
+enum Digit: Int  {
     case zero, one, two, three, four, five, six, seven, eight, nine
     
     var description: String {

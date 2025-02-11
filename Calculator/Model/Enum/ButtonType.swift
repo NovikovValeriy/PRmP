@@ -7,15 +7,12 @@
 
 import SwiftUI
 
-enum ButtonType: Hashable, CustomStringConvertible {
+enum ButtonType: Hashable {
     case digit(_ digit: Digit)
     case operation(_ operation: ArithmeticOperation)
     case negative
     case percent
-    case sine
-    case cosine
-    case tangent
-    case cotangent
+    case trigonometry(_ trigonometry: Trigonometry)
     case root
     case decimal
     case equals
@@ -28,6 +25,8 @@ enum ButtonType: Hashable, CustomStringConvertible {
             return digit.description
         case .operation(let operation):
             return operation.description
+        case .trigonometry(let trigonometry):
+            return trigonometry.description
         case .negative:
             return "plus.forwardslash.minus"
         case .percent:
@@ -40,22 +39,23 @@ enum ButtonType: Hashable, CustomStringConvertible {
             return "AC"
         case .clear:
             return "C"
-        case .sine:
-            return "sin"
-        case .cosine:
-            return "cos"
-        case .tangent:
-            return "tan"
-        case .cotangent:
-            return "cot"
         case .root:
             return "x.squareroot"
         }
     }
     
+    var isTrigonometry: Bool {
+        switch self {
+        case .trigonometry:
+            return true
+        default:
+            return false
+        }
+    }
+    
     var buttonColor: Color {
         switch self {
-        case .sine, .cosine, .tangent, .cotangent:
+        case .trigonometry:
             return Color.trigonometryButton
         case .allClear, .clear, .negative, .percent, .root:
             return Color.secondaryButton
@@ -77,7 +77,7 @@ enum ButtonType: Hashable, CustomStringConvertible {
     
     var fontSize: CGFloat {
         switch self {
-        case .sine, .cosine, .tangent, .cotangent:
+        case .trigonometry:
             return 25
         case .operation, .equals:
             return 35

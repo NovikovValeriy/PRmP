@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import AVFoundation
 
 extension CalculatorView {
     final class ViewModel: ObservableObject {
         
-        @Published private var calculator = CalculatorNew()
+        @Published private var calculator = CalculatorModel()
+        @Published var shouldShake: Bool = false
+        @Published var shouldDim: Bool = false
         
         var displayText: String {
             return calculator.displayText
@@ -20,10 +23,14 @@ extension CalculatorView {
             return calculator.displaySecondNumberText ?? ""
         }
         
+        var clearShowingType: ButtonType {
+            return calculator.showAllClear ? ButtonType.allClear : ButtonType.clear
+        }
+        
         var buttons: [[ButtonType]] {
-            let clearType: ButtonType = calculator.showAllClear ? ButtonType.allClear : ButtonType.clear
+            let clearType: ButtonType = clearShowingType
             return [
-                [.sine, .cosine, .tangent, .cotangent],
+                [.trigonometry(.sine), .trigonometry(.cosine), .trigonometry(.tangent), .trigonometry(.cotangent)],
                 [clearType, .negative, .percent, .root],
                 [.digit(.seven), .digit(.eight), .digit(.nine), .operation(.division)],
                 [.digit(.four), .digit(.five), .digit(.six), .operation(.multiplication)],
@@ -32,12 +39,37 @@ extension CalculatorView {
             ]
         }
         
+        func shakeText(){
+            shouldShake = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.shouldShake = false
+            }
+        }
+        
+        private func dimText(){
+            shouldDim = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.shouldDim = false
+            }
+        }
+        
         func performAction(for buttonType: ButtonType) {
             switch buttonType {
             case .digit(let digit):
                 calculator.setDigit(digit)
             case .operation(let operation):
                 calculator.setOperation(operation)
+            case .trigonometry(let trigonometry):
+                switch trigonometry {
+                    case .sine:
+                        calculator.sine()
+                    case .cosine:
+                        calculator.cosine()
+                    case .tangent:
+                        calculator.tangent()
+                    case .cotangent:
+                        calculator.cotangent()
+                }
             case .negative:
                 calculator.toggleSign()
             case .percent:
@@ -45,21 +77,25 @@ extension CalculatorView {
             case .decimal:
                 calculator.setDecimal()
             case .equals:
+                let isOperationSelected = calculator.isOperationSelected
+                let prev = calculator.displayText
                 calculator.evaluate()
+                if calculator.displayText == prev && isOperationSelected {
+                    dimText()
+                }
             case .allClear:
                 calculator.allClear()
             case .clear:
                 calculator.clear()
-            case .sine:
-                calculator.sine()
-            case .cosine:
-                calculator.cosine()
-            case .tangent:
-                calculator.tangent()
-            case .cotangent:
-                calculator.cotangent()
             case .root:
                 calculator.root()
+            }
+            
+            switch buttonType {
+            case .digit(let digit):
+                AudioServicesPlaySystemSound(1200 + UInt32(digit.description)!)
+            default:
+                AudioServicesPlaySystemSound(1104)
             }
         }
         

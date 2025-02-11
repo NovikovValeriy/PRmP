@@ -1,5 +1,5 @@
 //
-//  CalculatorNew.swift
+//  CalculatorModel.swift
 //  Calculator
 //
 //  Created by Валерий Новиков on 7.02.25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CalculatorNew {
+struct CalculatorModel {
     
     // MARK: Properties
     private var currentNumber: Decimal = 0
@@ -55,6 +55,10 @@ struct CalculatorNew {
             return false
         }
         return true
+    }
+    
+    var isOperationSelected: Bool {
+        return pendingOperation != nil
     }
     
     // MARK: Methods
@@ -114,6 +118,7 @@ struct CalculatorNew {
     }
     
     mutating func setDecimal() {
+        guard checkDigitsCount else { return }
         noExponentOputput = false
         decimalPressed = true
         showClear = true
