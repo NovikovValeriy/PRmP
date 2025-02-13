@@ -7,28 +7,47 @@
 
 import SwiftUI
 import AVFoundation
+import CoreHaptics
 
 struct CalculatorView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @EnvironmentObject private var viewModel: ViewModel
+    @Environment(\.scenePhase) var scenePhase
     
     @State private var shakeOffset: CGFloat = 0
     @State private var textOpacity = 1.0
+    @State private var engine: CHHapticEngine?
     private let spacing: CGFloat = 15
     
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.background
-                    .ignoresSafeArea()
-
-                VStack(spacing: 0) {
-                    Spacer()
-                    outputView
-                    buttonGroup(geometry: geometry)
+                NavigationStack {
+                    VStack(spacing: 0) {
+                        Spacer()
+                        outputView
+                        buttonGroup(geometry: geometry)
+                    }
+                    .background(Color.background)
+//                    .toolbar {
+//                        ToolbarItem(placement: .topBarTrailing){
+//                            Button("Theme") {
+//                                vibrate()
+//                            }
+//                        }
+//                    }
                 }
             }
-            .foregroundStyle(.white)
+        }
+        .onAppear {
+            prepareHapticsEngine()
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                prepareHapticsEngine()
+            } else if newPhase == .inactive || newPhase == .background {
+                stopHaptics()
+            }
         }
     }
     
@@ -37,6 +56,7 @@ struct CalculatorView: View {
             Spacer()
             VStack {
                 Text(viewModel.displayText)
+                    .foregroundStyle(Color.labelFont)
                     .font(.system(size: verticalSizeClass == .regular ? 90 : 50, weight: .light))
                     .allowsTightening(true)
                     .minimumScaleFactor(0.2)
@@ -44,6 +64,7 @@ struct CalculatorView: View {
                     .onShake {
                         viewModel.performAction(for: viewModel.clearShowingType)
                         viewModel.shakeText()
+                        viewModel.vibrate()
                     }
                     .offset(x: shakeOffset)
                     .opacity(textOpacity)
@@ -52,6 +73,12 @@ struct CalculatorView: View {
                     .onChange(of: viewModel.shouldShake) { newValue in
                         if newValue {
                             shakeText()
+                        }
+                    }
+                
+                    .onChange(of: viewModel.shouldVibrate) { newValue in
+                        if newValue {
+                            vibrateSequence()
                         }
                     }
                 
@@ -78,6 +105,7 @@ struct CalculatorView: View {
                             button: button,
                             action: {
                                 viewModel.performAction(for: button)
+                                vibrate()
                             },
                             foregroundColor: viewModel.buttonTypeIsHighlighted(buttonType: button) ? button.buttonColor : button.fontColor,
                             backgroundColor: viewModel.buttonTypeIsHighlighted(buttonType: button) ? button.fontColor : button.buttonColor
@@ -96,7 +124,7 @@ struct CalculatorView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 shakeOffset = -30
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    shakeOffset = 20
+                    shakeOffset = 10
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         shakeOffset = 0
                     }
@@ -109,6 +137,78 @@ struct CalculatorView: View {
         textOpacity = 0
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             textOpacity = 1
+        }
+    }
+    
+    func prepareHapticsEngine() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        do {
+            engine = try CHHapticEngine()
+            
+            engine?.stoppedHandler = { reason in
+                print("The engine stopped: \(reason)")
+                do {
+                    try self.engine?.start()
+                } catch {
+                    print("Failed to restart the engine: \(error)")
+                }
+            }
+            
+            try engine?.start()
+        } catch {
+            print("Error in creating haptic engine: \(error.localizedDescription)")
+        }
+    }
+    
+    func stopHaptics() {
+        engine?.stop(completionHandler: { error in
+            if let error = error {
+                print("Error stopping the engine: \(error.localizedDescription)")
+            } else {
+                print("Haptic engine stopped successfully")
+            }
+        })
+    }
+    
+    func vibrate() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        var events = [CHHapticEvent]()
+        
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 1)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
+        
+        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        events.append(event)
+        
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play haptic pattern: \(error.localizedDescription)")
+        }
+    }
+    
+    func vibrateSequence() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        var events = [CHHapticEvent]()
+        
+        for i in stride(from: 0, to: 0.5, by: 0.1) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(1 - i))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(1 - i))
+            
+            let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
+            events.append(event)
+        }
+        
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play haptic pattern: \(error.localizedDescription)")
         }
     }
 }
@@ -163,7 +263,7 @@ struct CalculatorButton: View {
         
         if let verticalSizeClass = verticalSizeClass {
             if verticalSizeClass == .compact {
-                return (screenHeight * 0.4 - totalSpacing) / 6
+                return (screenHeight * 0.35 - totalSpacing) / 6
                 
             }
         }

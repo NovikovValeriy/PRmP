@@ -61,7 +61,7 @@ enum ButtonType: Hashable {
             return Color.secondaryButton
         case .operation, .equals:
             return Color.operatorButton
-        default:
+        case .digit, .decimal:
             return Color.primaryButton
         }
     }
@@ -69,9 +69,13 @@ enum ButtonType: Hashable {
     var fontColor: Color {
         switch self {
         case .allClear, .clear, .negative, .percent, .root:
-            return Color.black
-        default:
-            return Color.white
+            return Color.secondaryFont
+        case .digit, .decimal:
+            return Color.primaryFont
+        case .operation, .equals:
+            return Color.operatorFont
+        case .trigonometry:
+            return Color.trigonometryFont
         }
     }
     
