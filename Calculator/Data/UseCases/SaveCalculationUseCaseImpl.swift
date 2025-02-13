@@ -5,7 +5,7 @@
 //  Created by Валерий Новиков on 13.02.25.
 //
 
-class SaveCalculationUseCaseImpl {
+class SaveCalculationUseCaseImpl: SaveCalculationUseCase {
     private let repository: CalculationHistoryRepository
     
     init(repository: CalculationHistoryRepository) {

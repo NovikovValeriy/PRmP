@@ -11,8 +11,14 @@ import CoreHaptics
 
 struct CalculatorView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @EnvironmentObject private var viewModel: ViewModel
     @Environment(\.scenePhase) var scenePhase
+    //@EnvironmentObject private var viewModel: CalculatorViewModel
+    @StateObject private var viewModel = CalculatorViewModel(
+        saveCalculationUseCase: SaveCalculationUseCaseImpl(repository: CalculationHistoryRepositoryImplementation())
+    )
+    @StateObject private var historyViewModel = HistoryViewModel(
+        fetchCalculationsUseCase: FetchCalculationsUseCaseImpl(repository: CalculationHistoryRepositoryImplementation())
+    )
     
     @State private var shakeOffset: CGFloat = 0
     @State private var textOpacity = 1.0
@@ -21,21 +27,24 @@ struct CalculatorView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                NavigationStack {
+            NavigationStack {
+                ZStack {
                     VStack(spacing: 0) {
                         Spacer()
                         outputView
                         buttonGroup(geometry: geometry)
                     }
                     .background(Color.background)
-//                    .toolbar {
-//                        ToolbarItem(placement: .topBarTrailing){
-//                            Button("Theme") {
-//                                vibrate()
-//                            }
-//                        }
-//                    }
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing){
+                            NavigationLink {
+                                HistoryView(viewModel: historyViewModel)
+                            } label: {
+                                //Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                                Text("История")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -278,5 +287,4 @@ struct CalculatorButton: View {
 
 #Preview {
     CalculatorView()
-        .environmentObject(CalculatorView.ViewModel())
 }

@@ -9,37 +9,38 @@ import Foundation
 import SwiftUI
 
 final class HistoryViewModel: ObservableObject {
-    @AppStorage("app_id") var appId: String?
+    @AppStorage("app_id") private var appId: String?
     @Published var history: [Calculation] = []
     @Published var errorMessage: String = ""
     
     private let fetchCalculationsUseCase: FetchCalculationsUseCase
-    private let saveCalculationUseCase: SaveCalculationUseCase
+    //private let saveCalculationUseCase: SaveCalculationUseCase
     
     init(
-        fetchCalculationsUseCase: FetchCalculationsUseCase,
-        saveCalculationUseCase: SaveCalculationUseCase
+        fetchCalculationsUseCase: FetchCalculationsUseCase
+        //saveCalculationUseCase: SaveCalculationUseCase
     ) {
         self.fetchCalculationsUseCase = fetchCalculationsUseCase
-        self.saveCalculationUseCase = saveCalculationUseCase
+        //self.saveCalculationUseCase = saveCalculationUseCase
     }
     
-    func saveCalculation(_ calculation: Calculation) {
-        saveCalculationUseCase.execute(calculation, forUser: appId ?? "") { [weak self] result in
-            switch result {
-            case .success:
-                self?.fetchHistory()
-            case .failure(let error):
-                self?.errorMessage = error.localizedDescription
-            }
-        }
-    }
+//    func saveCalculation(_ calculation: Calculation) {
+//        saveCalculationUseCase.execute(calculation, forUser: appId ?? "") { [weak self] result in
+//            switch result {
+//            case .success:
+//                self?.fetchHistory()
+//            case .failure(let error):
+//                self?.errorMessage = error.localizedDescription
+//            }
+//        }
+//    }
 
     func fetchHistory() {
         fetchCalculationsUseCase.execute(forUser: appId ?? "") { [weak self] result in
             switch result {
             case .success(let calculations):
                 self?.history = calculations
+                print(self?.history)
             case .failure(let error):
                 self?.errorMessage = error.localizedDescription
             }
