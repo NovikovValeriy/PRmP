@@ -128,7 +128,12 @@ struct CalculatorModel {
     
     mutating func setPercent() {
         noExponentOputput = false
-        currentNumber /= 100
+        if let secondNumber = secondNumber {
+            currentNumber = secondNumber * (currentNumber / 100)
+        }
+        else {
+            currentNumber /= 100
+        }
         showingResult = true
         decimalPressed = false
     }

@@ -14,14 +14,16 @@ struct HistoryView: View {
 //        saveCalculationUseCase: SaveCalculationUseCaseImpl(repository: CalculationHistoryRepositoryImplementation())
 //    )
     @ObservedObject var viewModel: HistoryViewModel
+    @Environment(\.dismiss) private var dismiss
     
     init(viewModel: HistoryViewModel) {
         self.viewModel = viewModel
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.primaryFont]
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.primaryFont]
         UINavigationBar.appearance().barTintColor = UIColor.background
+        //UINavigationBar.appearance().backItem?.backBarButtonItem?.tintColor = UIColor.operatorButton
     }
-    
+
     var body: some View {
         ZStack {
             Color.background
@@ -44,6 +46,18 @@ struct HistoryView: View {
                 .background(Color.background)
                 .navigationTitle("История")
             }
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading:
+                Button {
+                    dismiss()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                        Text("Назад")
+                    }
+                    .foregroundStyle(Color.operatorButton)
+                }
+            )
             .onAppear {
                 viewModel.fetchHistory()
             }

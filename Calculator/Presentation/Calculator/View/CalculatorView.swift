@@ -19,6 +19,7 @@ struct CalculatorView: View {
     @StateObject private var historyViewModel = HistoryViewModel(
         fetchCalculationsUseCase: FetchCalculationsUseCaseImpl(repository: CalculationHistoryRepositoryImplementation())
     )
+    @StateObject var notificationViewModel = NotificationViewModel(repository: NotificationRepositoryImplementation())
     
     @State private var shakeOffset: CGFloat = 0
     @State private var textOpacity = 1.0
@@ -40,9 +41,9 @@ struct CalculatorView: View {
                             NavigationLink {
                                 HistoryView(viewModel: historyViewModel)
                             } label: {
-                                //Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-                                Text("История")
+                                Image(systemName: "clock.arrow.circlepath")
                             }
+                            .foregroundColor(.operatorButton)
                         }
                     }
                 }

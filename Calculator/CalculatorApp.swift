@@ -8,20 +8,23 @@
 import SwiftUI
 import FirebaseCore
 
-//class AppDelegate: NSObject, UIApplicationDelegate {
-//  func application(_ application: UIApplication,
-//                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//    FirebaseApp.configure()
-//
-//    return true
-//  }
-//}
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+    
+    // Обработка уведомлений на переднем плане
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Показываем уведомление как alert и звук
+        completionHandler([.banner, .sound])
+    }
+}
 
 @main
 struct CalculatorApp: App {
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("app_id") var appUUID = ""
-    @StateObject var calculatorViewModel = CalculatorViewModel(saveCalculationUseCase: SaveCalculationUseCaseImpl(repository: CalculationHistoryRepositoryImplementation()))
     
     init() {
         FirebaseApp.configure()
@@ -35,7 +38,6 @@ struct CalculatorApp: App {
     var body: some Scene {
         WindowGroup {
             CalculatorView()
-//                .environmentObject(calculatorViewModel)
         }
     }
 }
